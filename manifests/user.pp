@@ -29,13 +29,17 @@
 #
 define mysql::user (
   $password,
-  $database    = '*',
+  $database    = undef,
   $host        = 'localhost',
   $grant       = 'all',
   $ensure      = 'present'
 ) {
 
   $user = $name
+  $db_str = $database ? {
+    undef => undef,
+    default => "/${database}"
+  }
 
   validate_re($ensure, '^(present|absent)$',
   "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
@@ -48,7 +52,7 @@ define mysql::user (
   ensure_resource('database_user', "${user}@${host}", $user_resource)
 
   if $ensure == 'present' {
-    database_grant { "${user}@${host}/${database}":
+    database_grant { "${user}@${host}${db_str}":
       privileges => $grant,
       provider   => 'mysql',
       require    => Database_user["${user}@${host}"],
