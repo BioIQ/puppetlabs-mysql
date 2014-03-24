@@ -36,6 +36,7 @@
 class mysql::config(
   $bind_address      = $mysql::bind_address,
   $config_file       = $mysql::config_file,
+  $config_template   = $mysql::config_template,
   $datadir           = $mysql::datadir,
   $default_engine    = $mysql::default_engine,
   $etc_root_password = $mysql::etc_root_password,
@@ -134,7 +135,7 @@ class mysql::config(
     purge   => $purge_conf_dir,
   }
   file { $config_file:
-    content => template('mysql/my.cnf.erb'),
+    content => template($config_template),
     mode    => '0644',
   }
 
